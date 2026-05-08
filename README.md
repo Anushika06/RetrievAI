@@ -167,71 +167,29 @@ Additionally, `temperature: 0.1` minimizes creative (hallucinated) generation.
 
 ---
 
-## Setup Instructions
+## Deployed Link
 
-### Prerequisites
-
-- Node.js 18+, npm 9+
-- Google AI Studio account (free)
-- Qdrant Cloud account (free, no credit card)
-
-### Step 1: Install
-
-```bash
-cd retrievai
-npm install --legacy-peer-deps
-```
-
-### Step 2: Get Google API Key
-
-1. Go to [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
-2. Click **"Create API key"** → copy the key
-
-### Step 3: Set Up Qdrant Cloud
-
-1. Go to [https://cloud.qdrant.io](https://cloud.qdrant.io) → create a free account
-2. Click **"Create Cluster"** → Free tier → any region → **"Create"**
-3. Wait ~1 minute → copy the **cluster URL** from the dashboard
-4. Go to **"API Keys"** tab → **"Create API key"** → copy the key
-
-### Step 4: Configure Environment
-
-```bash
-cp .env.local.example .env.local
-```
-
-Edit `.env.local`:
-```env
-GOOGLE_API_KEY=your_actual_google_api_key
-QDRANT_URL=https://your-cluster-id.region.gcp.cloud.qdrant.io
-QDRANT_API_KEY=your_actual_qdrant_api_key
-```
-
-### Step 5: Run
-
-```bash
-npm run dev
-# Open http://localhost:3000
-```
+- [Live Application](https://your-deployed-link-here.com)
 
 ---
 
-## Deployment on Vercel
+## Setup Instructions
 
-RetrievAI is designed for zero-configuration Vercel deployment:
-- No file system writes — all persistence through Qdrant Cloud
-- Web Streams API — compatible with Vercel's serverless runtime
-- Next.js App Router route handlers — no standalone server needed
-
-### Deploy Steps
-
-1. Push your repo to GitHub
-2. Go to [vercel.com/new](https://vercel.com/new) → import your repo
-3. Add environment variables in **Settings → Environment Variables**:
-   - `GOOGLE_API_KEY`
-   - `QDRANT_URL`
-   - `QDRANT_API_KEY`
-4. Click **Deploy**
+1. **Install dependencies:** 
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+2. **Configure environment:** 
+   ```bash
+   cp .env.example .env
+   ```
+3. **Add API keys to `.env`:**
+   - Get Google API Key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+   - Get Cluster URL & API Key from [Qdrant Cloud](https://cloud.qdrant.io)
+4. **Run locally:** 
+   ```bash
+   npm run dev
+   ```
 
 ---
 
@@ -257,13 +215,10 @@ retrievai/
 │   ├── embedder.ts           # GoogleGenerativeAIEmbeddings + batching
 │   ├── vectorStore.ts        # Qdrant store/retrieve
 │   └── generator.ts          # Grounded generation + Web Streams
-├── .env.local.example        # Environment variable template
+├── .env.example              # Environment variable template
 ├── next.config.mjs           # Next.js config
 └── package.json
 ```
 
 ---
 
-## License
-
-MIT
