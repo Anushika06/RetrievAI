@@ -4,7 +4,7 @@
 
 ![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
-![Google Gemini](https://img.shields.io/badge/Gemini-1.5_Flash-orange?style=flat-square&logo=google)
+![Google Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-orange?style=flat-square&logo=google)
 ![Qdrant](https://img.shields.io/badge/Qdrant-Cloud-purple?style=flat-square)
 
 ---
@@ -18,8 +18,7 @@
 5. [How Retrieval Works](#how-retrieval-works)
 6. [Grounding Enforcement](#grounding-enforcement)
 7. [Setup Instructions](#setup-instructions)
-8. [Deployment on Vercel](#deployment-on-vercel)
-9. [Project Structure](#project-structure)
+8. [Project Structure](#project-structure)
 
 ---
 
@@ -28,8 +27,8 @@
 RetrievAI is a full-stack Retrieval-Augmented Generation (RAG) application built on:
 
 - **Next.js 14** (App Router) — single-repo full-stack TypeScript
-- **Google Gemini 1.5 Flash** — fast generation with 1M token context
-- **Google text-embedding-004** — 768-dimensional semantic embeddings (free)
+- **Google Gemini 2.5 Flash** — fast generation with 1M token context
+- **Google gemini-embedding-001** — 768-dimensional semantic embeddings (free)
 - **Qdrant Cloud** — managed vector database (free tier, no credit card)
 - **LangChain** — orchestration for chunking, embedding, and retrieval
 
@@ -53,7 +52,7 @@ POST /api/upload
      |                  chunkSize=1000, overlap=200
      |                  Separators: \n\n -> \n -> ". " -> " " -> ""
      |
-     +-- [3] Embed ---- text-embedding-004 (768 dims)
+     +-- [3] Embed ---- gemini-embedding-001 (768 dims)
      |                  Batched in groups of 20
      |
      +-- [4] Store ---- Qdrant Cloud (new collection per upload)
@@ -67,7 +66,7 @@ User types question
      v
 POST /api/chat { question, collectionId }
      |
-     +-- [5] Embed query -- text-embedding-004 (same model)
+     +-- [5] Embed query -- gemini-embedding-001 (same model)
      |
      +-- [6] Retrieve ----- Qdrant cosine similarity search
      |                      Top k=5 most similar chunks
@@ -75,7 +74,7 @@ POST /api/chat { question, collectionId }
      +-- [7] Build prompt - Inject chunks as numbered context
      |                      blocks into SYSTEM_PROMPT template
      |
-     +-- [8] Generate ----- Gemini 1.5 Flash (streaming)
+     +-- [8] Generate ----- Gemini 2.5 Flash (streaming)
                             Web Streams ReadableStream -> frontend
 ```
 
@@ -116,11 +115,11 @@ Without overlap, content at chunk boundaries can be "orphaned" — the ending of
 
 ---
 
-## Why text-embedding-004?
+## Why gemini-embedding-001?
 
 | Model | Dimensions | Free Tier | Quality |
 |-------|-----------|-----------|---------|
-| `text-embedding-004` (Google) | 768 | Yes | Excellent |
+| `gemini-embedding-001` (Google) | 768 | Yes | Excellent |
 | `text-embedding-3-small` (OpenAI) | 1536 | No | Good |
 | `text-embedding-3-large` (OpenAI) | 3072 | No | Better |
 | `all-MiniLM-L6-v2` (HuggingFace) | 384 | Yes | Lower |
@@ -134,7 +133,7 @@ Key reasons:
 
 ## How Retrieval Works
 
-1. **Query embedding**: The question is converted to a 768-dimensional vector using `text-embedding-004`.
+1. **Query embedding**: The question is converted to a 768-dimensional vector using `gemini-embedding-001`.
 2. **Vector search**: Qdrant searches using cosine similarity: `similarity(A,B) = (A·B) / (||A|| × ||B||)`
 3. **Top k=5 results**: The 5 most similar chunks are returned, ordered by relevance score.
 
