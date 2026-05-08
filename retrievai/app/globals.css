@@ -1,0 +1,404 @@
+/* ============================================================
+   RetrievAI — globals.css
+   "Obsidian Intelligence" Design System
+   ============================================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Backgrounds */
+  --bg-void: #04060f;
+  --bg-surface: #080d1a;
+  --bg-glass: rgba(8, 13, 26, 0.65);
+
+  /* Borders */
+  --border-subtle: rgba(99, 102, 241, 0.15);
+  --border-glow: rgba(99, 102, 241, 0.4);
+
+  /* Accent colors */
+  --accent-primary: #6366f1;
+  --accent-cyan: #22d3ee;
+  --accent-glow: rgba(99, 102, 241, 0.12);
+
+  /* Text */
+  --text-primary: #e2e8f0;
+  --text-muted: #475569;
+  --text-dim: #1e2d45;
+
+  /* Gradients */
+  --gradient-brand: linear-gradient(135deg, #6366f1 0%, #22d3ee 100%);
+}
+
+/* ── Base Reset & Body ─────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-dm-sans, 'DM Sans', system-ui, sans-serif);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ── Typography Utilities ─────────────────────────────────── */
+.font-sora {
+  font-family: var(--font-sora, 'Sora', sans-serif);
+}
+.font-dm-sans {
+  font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
+}
+.font-mono {
+  font-family: var(--font-jetbrains, 'JetBrains Mono', monospace);
+}
+
+/* ── Gradient Text ────────────────────────────────────────── */
+.gradient-text {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glassmorphism Panel System ──────────────────────────── */
+/* Outer wrapper: gradient border trick (1px padding, gradient background) */
+.panel-gradient-border {
+  padding: 1px;
+  border-radius: 17px;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.2),
+    rgba(34, 211, 238, 0.1)
+  );
+  transition: background 300ms ease;
+  height: 100%;
+}
+
+.panel-gradient-border:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.35),
+    rgba(34, 211, 238, 0.25)
+  );
+}
+
+/* Inner panel: glass effect */
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 1px rgba(99, 102, 241, 0.05) inset,
+    0 32px 64px rgba(0, 0, 0, 0.4),
+    0 0 80px rgba(99, 102, 241, 0.04);
+  overflow: hidden;
+}
+
+/* ── Upload Drop Zone ─────────────────────────────────────── */
+.upload-drop-zone {
+  border: 2px dashed rgba(99, 102, 241, 0.25);
+  border-radius: 12px;
+  min-height: 200px;
+  transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.upload-drop-zone:hover {
+  border-color: rgba(99, 102, 241, 0.45);
+  background: rgba(99, 102, 241, 0.04);
+}
+
+.upload-drop-zone.drag-over {
+  border-color: var(--border-glow);
+  background: rgba(99, 102, 241, 0.06);
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.upload-drop-zone.drag-over .doc-icon-float {
+  transform: translateY(-6px) scale(1.1);
+}
+
+/* ── Floating document icon animation ─────────────────────── */
+.doc-icon-float {
+  animation: float 3s ease-in-out infinite;
+  transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ── Upload Panel Inner ─────────────────────────────────────── */
+.upload-panel-inner {
+  /* Padding handled via Tailwind classes in the component */
+}
+
+/* ── Processing Stage Animations ──────────────────────────── */
+/* Animated dashed border */
+@keyframes dash-rotate {
+  to { stroke-dashoffset: -20; }
+}
+
+/* Pulsing ring for active processing stage */
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.pulse-ring-active::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(34, 211, 238, 0.6);
+  animation: pulse-ring 1.2s ease-out infinite;
+}
+
+/* ── Shimmer text effect for active stage label ──────────── */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #475569 0%,
+    #94a3b8 50%,
+    #475569 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 2s linear infinite;
+}
+
+/* ── Document card (ready state) ─────────────────────────── */
+.document-card {
+  background: rgba(8, 13, 26, 0.8);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.chunk-badge {
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  color: #22d3ee;
+}
+
+/* ── Chat Message Bubbles ─────────────────────────────────── */
+.user-bubble {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  border-radius: 16px 16px 4px 16px;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+.ai-bubble {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px 16px 16px 4px;
+}
+
+/* ── Streaming cursor ─────────────────────────────────────── */
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.streaming-cursor {
+  display: inline-block;
+  animation: blink-cursor 0.8s ease-in-out infinite;
+  color: var(--accent-cyan);
+  font-size: 0.85em;
+  line-height: 1;
+}
+
+/* ── Typing indicator dots ────────────────────────────────── */
+@keyframes bounce-dot {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-5px); opacity: 1; }
+}
+
+.typing-dot {
+  animation: bounce-dot 1.2s ease-in-out infinite;
+}
+
+/* ── Entry animations ─────────────────────────────────────── */
+@keyframes slide-in-right {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 250ms ease-out both;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 250ms ease-out both;
+}
+
+.animate-slide-up {
+  animation: slide-up 300ms ease-out both;
+}
+
+.animate-fade-up {
+  animation: fade-up 400ms ease-out both;
+}
+
+/* ── Empty state ripple circles ──────────────────────────── */
+@keyframes ripple {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+.empty-ripple-1,
+.empty-ripple-2,
+.empty-ripple-3 {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  animation: ripple 3s ease-out infinite;
+}
+
+.empty-ripple-2 { animation-delay: 1s; }
+.empty-ripple-3 { animation-delay: 2s; }
+
+/* ── Custom scrollbar for chat ───────────────────────────── */
+.chat-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 2px;
+}
+.chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.5);
+}
+
+/* ── Chat textarea ───────────────────────────────────────── */
+.chat-textarea {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.2) transparent;
+}
+
+.chat-textarea:focus {
+  outline: none;
+}
+
+/* ── Send button ─────────────────────────────────────────── */
+.send-button {
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.send-button:hover:not(:disabled) {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+}
+
+.send-button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* ── Sources accordion ───────────────────────────────────── */
+.sources-accordion {
+  /* Container — no extra styles needed, managed by component */
+}
+
+.source-card {
+  transition: border-color 200ms ease, background 200ms ease;
+}
+
+.source-card:hover {
+  border-color: rgba(99, 102, 241, 0.25) !important;
+  background: rgba(99, 102, 241, 0.04) !important;
+}
+
+/* ── Utility: no scrollbar (for overflow containers) ─────── */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── Reduced motion support ──────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .streaming-cursor {
+    animation: none;
+    opacity: 1;
+  }
+
+  .doc-icon-float {
+    animation: none;
+  }
+
+  .empty-ripple-1,
+  .empty-ripple-2,
+  .empty-ripple-3 {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ── Responsive: stack panels on narrow screens ──────────── */
+@media (max-width: 768px) {
+  main[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    overflow-y: auto;
+  }
+
+  .panel-gradient-border {
+    height: auto;
+    min-height: 300px;
+  }
+
+  .glass-panel {
+    min-height: 300px;
+  }
+}
