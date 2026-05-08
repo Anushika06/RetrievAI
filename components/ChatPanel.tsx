@@ -183,7 +183,7 @@ export default function ChatPanel({ collectionId, fileName }: ChatPanelProps) {
                   ? "Upload a document to begin"
                   : `Chatting with ${fileName ?? "your document"}`}
               </p>
-              <p className="text-xs text-slate-600 font-dm-sans max-w-[260px] leading-relaxed">
+              <p className="text-xs text-slate-600 font-dm-sans max-w-[260px] mx-auto leading-relaxed">
                 {isDisabled
                   ? "Drop a PDF or TXT file in the panel to the left, then ask any question about its content."
                   : "Ask anything — every answer is grounded in your document's content."}

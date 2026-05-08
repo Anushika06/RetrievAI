@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ["pdf-parse", "@langchain/community"],
   // Increase the server action body size limit for file uploads (10MB)
   experimental: {
+    serverComponentsExternalPackages: ["pdf-parse", "@langchain/community"],
     serverActions: {
       bodySizeLimit: "10mb",
     },

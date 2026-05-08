@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
-import { PDFParse } from "pdf-parse";
+import pdfParse from "pdf-parse";
 import { chunkText } from "@/lib/chunker";
 import { storeDocuments } from "@/lib/vectorStore";
 
@@ -60,10 +60,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     if (file.type === "application/pdf" || file.name.endsWith(".pdf")) {
       try {
-        const parser = new PDFParse({ data: buffer });
-        const result = await parser.getText();
+        const result = await pdfParse(buffer);
         rawText = result.text;
-        await parser.destroy();
       } catch {
         return NextResponse.json(
           {
