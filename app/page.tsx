@@ -57,7 +57,7 @@ export default function HomePage() {
 
       <div className="relative flex flex-col" style={{ zIndex: 10, height: "100vh" }}>
         <header
-          className="flex items-center justify-between px-6 flex-shrink-0"
+          className="flex items-center justify-between px-4 md:px-6 flex-shrink-0"
           style={{
             height: "64px",
             background: "var(--bg-glass)",
@@ -154,25 +154,25 @@ export default function HomePage() {
                   </linearGradient>
                 </defs>
               </svg>
-              <span className="text-xs font-dm-sans text-slate-500">Powered by Gemini</span>
+              <span className="hidden sm:inline text-xs font-dm-sans text-slate-500">Powered by Gemini</span>
+              <span className="sm:hidden text-xs font-dm-sans text-slate-500">Gemini</span>
             </div>
           </div>
         </header>
 
         <main
-          className="flex-1 grid gap-4 p-4 overflow-hidden min-h-0"
+          className="flex-1 flex flex-col lg:grid gap-4 p-4 overflow-y-auto lg:overflow-hidden min-h-0 lg:grid-cols-[380px_1fr]"
           style={{
-            gridTemplateColumns: "380px 1fr",
             height: "calc(100vh - 64px)",
           }}
         >
-          <div className="panel-gradient-border min-h-0">
+          <div className="panel-gradient-border min-h-0 shrink-0 min-h-[360px] lg:min-h-0">
             <div className="glass-panel h-full">
               <UploadPanel onUploadComplete={handleUploadComplete} />
             </div>
           </div>
 
-          <div className="panel-gradient-border min-h-0">
+          <div className="panel-gradient-border min-h-0 flex-1 min-h-[500px] lg:min-h-0">
             <div className="glass-panel h-full overflow-hidden flex flex-col">
               <ChatPanel
                 collectionId={uploadResult?.collectionId ?? null}
