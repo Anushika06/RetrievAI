@@ -154,8 +154,7 @@ export default function HomePage() {
                   </linearGradient>
                 </defs>
               </svg>
-              <span className="hidden sm:inline text-xs font-dm-sans text-slate-500">Powered by Gemini</span>
-              <span className="sm:hidden text-xs font-dm-sans text-slate-500">Gemini</span>
+              <span className="hidden sm:inline text-xs font-dm-sans text-slate-500">Chat With Your Documents</span>
             </div>
           </div>
         </header>
