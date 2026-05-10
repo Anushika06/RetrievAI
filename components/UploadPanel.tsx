@@ -52,7 +52,7 @@ export default function UploadPanel({ onUploadComplete }: UploadPanelProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [progress, setProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const stageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stageTimerRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   /**
    * Advances through the UI stepper stages while the actual upload is running.
@@ -65,11 +65,18 @@ export default function UploadPanel({ onUploadComplete }: UploadPanelProps) {
       elapsed += delays[index];
       const progressPercent = ((index + 1) / 4) * 85;
 
-      stageTimerRef.current = setTimeout(() => {
+      const id = setTimeout(() => {
         setStage(stageKey);
         setProgress(progressPercent);
       }, elapsed);
+
+      stageTimerRefs.current.push(id);
     });
+  }, []);
+
+  const clearAllTimers = useCallback(() => {
+    stageTimerRefs.current.forEach(clearTimeout);
+    stageTimerRefs.current = [];
   }, []);
 
   const handleFile = useCallback(
@@ -91,6 +98,7 @@ export default function UploadPanel({ onUploadComplete }: UploadPanelProps) {
       setProgress(5);
       setErrorMessage("");
       setUploadResult(null);
+      stageTimerRefs.current = []; // reset leftover IDs from a previous run
 
       simulateStageProgress();
 
@@ -109,7 +117,7 @@ export default function UploadPanel({ onUploadComplete }: UploadPanelProps) {
           throw new Error(data.error ?? "Upload failed. Please try again.");
         }
 
-        if (stageTimerRef.current) clearTimeout(stageTimerRef.current);
+        clearAllTimers();
 
         setStage("ready");
         setProgress(100);
@@ -118,7 +126,7 @@ export default function UploadPanel({ onUploadComplete }: UploadPanelProps) {
 
         window.dispatchEvent(new CustomEvent("upload-success"));
       } catch (err) {
-        if (stageTimerRef.current) clearTimeout(stageTimerRef.current);
+        clearAllTimers();
         setStage("error");
         setProgress(0);
         setErrorMessage(
@@ -126,7 +134,7 @@ export default function UploadPanel({ onUploadComplete }: UploadPanelProps) {
         );
       }
     },
-    [onUploadComplete, simulateStageProgress]
+    [onUploadComplete, simulateStageProgress, clearAllTimers]
   );
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
