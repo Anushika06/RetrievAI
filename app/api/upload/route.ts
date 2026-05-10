@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import pdfParse from "pdf-parse";
-import { chunkText } from "@/lib/chunker";
+import { chunkText, parseAndChunkCSV } from "@/lib/chunker";
 import { storeDocuments } from "@/lib/vectorStore";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
-const ACCEPTED_TYPES = ["application/pdf", "text/plain"];
+const ACCEPTED_TYPES = ["application/pdf", "text/plain", "text/csv"];
 
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -33,12 +33,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const isAcceptedType =
       ACCEPTED_TYPES.includes(file.type) ||
       file.name.endsWith(".txt") ||
-      file.name.endsWith(".pdf");
+      file.name.endsWith(".pdf") ||
+      file.name.endsWith(".csv");
 
     if (!isAcceptedType) {
       return NextResponse.json(
         {
-          error: `Unsupported file type "${file.type}". Please upload a PDF or .txt file.`,
+          error: `Unsupported file type "${file.type}". Only PDF, TXT, and CSV files are supported.`,
         },
         { status: 415 }
       );
@@ -70,6 +71,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           },
           { status: 422 }
         );
+      }
+    } else if (file.type === "text/csv" || file.name.endsWith(".csv")) {
+      const csvText = buffer.toString("utf-8");
+      try {
+        const documents = parseAndChunkCSV(csvText, file.name);
+        const chunkCount = documents.length;
+        const collectionId = `retrievai_${uuidv4().replace(/-/g, "_")}`;
+        await storeDocuments(documents, collectionId);
+        return NextResponse.json({ collectionId, chunkCount, fileName: file.name });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return NextResponse.json({ error: `CSV processing failed: ${msg}` }, { status: 422 });
       }
     } else {
       rawText = buffer.toString("utf-8");

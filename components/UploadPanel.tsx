@@ -74,8 +74,8 @@ export default function UploadPanel({ onUploadComplete }: UploadPanelProps) {
 
   const handleFile = useCallback(
     async (file: File) => {
-      if (!file.name.match(/\.(pdf|txt)$/i)) {
-        setErrorMessage("Only PDF and .txt files are supported.");
+      if (!file.name.match(/\.(pdf|txt|csv)$/i)) {
+        setErrorMessage("Only PDF, TXT, and CSV files are supported.");
         setStage("error");
         return;
       }
@@ -176,7 +176,7 @@ export default function UploadPanel({ onUploadComplete }: UploadPanelProps) {
         </div>
         <div>
           <h2 className="text-sm font-semibold text-slate-200 font-sora">Source Document</h2>
-          <p className="text-xs text-slate-500 font-dm-sans">PDF or TXT, up to 10MB</p>
+          <p className="text-xs text-slate-500 font-dm-sans">PDF, TXT, or CSV — up to 10MB</p>
         </div>
       </div>
 
@@ -222,14 +222,14 @@ export default function UploadPanel({ onUploadComplete }: UploadPanelProps) {
           </div>
 
           <p className="text-sm font-medium text-slate-400 font-sora mb-1">
-            {isDragOver ? "Release to upload" : "Drop PDF or TXT"}
+            {isDragOver ? "Release to upload" : "Drop PDF, TXT, or CSV"}
           </p>
           <p className="text-xs text-slate-600 font-dm-sans">or click to browse</p>
 
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,.txt"
+            accept=".pdf,.txt,.csv"
             className="hidden"
             onChange={handleInputChange}
           />

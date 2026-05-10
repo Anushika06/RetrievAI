@@ -185,7 +185,7 @@ export default function ChatPanel({ collectionId, fileName }: ChatPanelProps) {
               </p>
               <p className="text-xs text-slate-600 font-dm-sans max-w-[260px] mx-auto leading-relaxed">
                 {isDisabled
-                  ? "Drop a PDF or TXT file in the panel to the left, then ask any question about its content."
+                  ? "Drop a PDF, TXT or CSV file in the panel to the left, then ask any question about its content."
                   : "Ask anything — every answer is grounded in your document's content."}
               </p>
             </div>

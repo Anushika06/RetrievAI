@@ -1,6 +1,6 @@
 # RetrievAI — RAG-Powered Document Intelligence
 
-> Upload any PDF or `.txt` document and chat with it instantly. Every answer is grounded in your document — zero hallucination, complete source citations.
+> Upload any PDF, `.txt`, or `.csv` document and chat with it instantly. Every answer is grounded in your document — zero hallucination, complete source citations.
 
 ![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
@@ -41,16 +41,18 @@ The UI uses a custom "Obsidian Intelligence" design system with Three.js particl
 ```
 INGESTION PIPELINE
 ==================
-User uploads PDF/TXT
+User uploads PDF / TXT / CSV
      |
      v
 POST /api/upload
      |
      +-- [1] Parse ---- pdf-parse (PDF) / UTF-8 decode (TXT)
+     |                  csv-parse/sync (CSV)
      |
-     +-- [2] Chunk ---- RecursiveCharacterTextSplitter
+     +-- [2] Chunk ---- PDF/TXT: RecursiveCharacterTextSplitter
      |                  chunkSize=1000, overlap=200
-     |                  Separators: \n\n -> \n -> ". " -> " " -> ""
+     |                  CSV:  Row-Group Chunking
+     |                  50 rows/chunk, header repeated in every chunk
      |
      +-- [3] Embed ---- gemini-embedding-001 (768 dims)
      |                  Batched in groups of 20
@@ -113,6 +115,26 @@ This produces chunks that are **semantically coherent units** — the embedding 
 
 Without overlap, content at chunk boundaries can be "orphaned" — the ending of chunk N appears only in chunk N, and the beginning of chunk N+1 may start mid-topic. With 200-character overlap, the last 200 characters of chunk N repeat at the start of chunk N+1. Both chunks contain transitional context, so either can be retrieved for relevant queries. **No meaning is lost at the seam between chunks.**
 
+### CSV: Row-Group Chunking
+
+CSVs are tabular — each row is an atomic unit of meaning. Splitting them by character count would destroy the row-column relationships that give the data its meaning. Instead, `parseAndChunkCSV` uses a **Row-Group Chunking** strategy:
+
+| Property | Value | Rationale |
+|---|---|---|
+| Rows per chunk | 50 | Balances token count vs. context completeness |
+| Header repetition | Every chunk | LLM always knows what each column means |
+| Row format | `Col: value \| Col: value` | Human-readable key-value pairs, not raw CSV |
+| Metadata | `rowStart`, `rowEnd` | Enables precise citation of row ranges |
+
+Example — a row `Alice,30,Engineer` with header `Name,Age,Role` becomes:
+```
+CSV Columns: Name, Age, Role
+
+Name: Alice | Age: 30 | Role: Engineer
+```
+
+This format is far more LLM-friendly than raw comma-separated values because the model can understand `Name: Alice` better than just `Alice`.
+
 ---
 
 ## Why gemini-embedding-001?
@@ -168,7 +190,7 @@ Additionally, `temperature: 0.1` minimizes creative (hallucinated) generation.
 
 ## Deployed Link
 
-- [Live Application](https://your-deployed-link-here.com)
+- [Live Application](https://retriev-ai-mu.vercel.app)
 
 ---
 
@@ -210,13 +232,13 @@ retrievai/
 │   ├── ChatBubble.tsx        # User/AI message bubbles
 │   └── SourcesAccordion.tsx  # Retrieved chunks accordion
 ├── lib/
-│   ├── chunker.ts            # RecursiveCharacterTextSplitter
+│   ├── chunker.ts            # RecursiveCharacterTextSplitter (PDF/TXT) + Row-Group CSV chunker
 │   ├── embedder.ts           # GoogleGenerativeAIEmbeddings + batching
 │   ├── vectorStore.ts        # Qdrant store/retrieve
 │   └── generator.ts          # Grounded generation + Web Streams
 ├── .env.example              # Environment variable template
 ├── next.config.mjs           # Next.js config
-└── package.json
+└── package.json              
 ```
 
 ---
