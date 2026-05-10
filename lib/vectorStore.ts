@@ -1,4 +1,5 @@
 import { QdrantVectorStore } from "@langchain/qdrant";
+import { QdrantClient } from "@qdrant/js-client-rest";
 import { Document } from "@langchain/core/documents";
 import { createEmbedder } from "./embedder";
 import { ChunkMetadata } from "./chunker";
@@ -10,7 +11,7 @@ export interface RetrievedChunk {
 }
 
 
-function validateQdrantEnv(): { url: string; apiKey: string } {
+function buildQdrantClient(): QdrantClient {
   const url = process.env.QDRANT_URL;
   const apiKey = process.env.QDRANT_API_KEY;
 
@@ -25,7 +26,7 @@ function validateQdrantEnv(): { url: string; apiKey: string } {
     );
   }
 
-  return { url, apiKey };
+  return new QdrantClient({ url, apiKey, checkCompatibility: false });
 }
 
 
@@ -33,18 +34,14 @@ export async function storeDocuments(
   documents: Document<ChunkMetadata>[],
   collectionName: string
 ): Promise<QdrantVectorStore> {
-  const { url, apiKey } = validateQdrantEnv();
+  const client = buildQdrantClient();
   const embedder = createEmbedder();
 
   try {
     const vectorStore = await QdrantVectorStore.fromDocuments(
       documents,
       embedder,
-      {
-        url,
-        apiKey,
-        collectionName,
-      }
+      { client, collectionName }
     );
 
     return vectorStore;
@@ -62,17 +59,13 @@ export async function retrieveChunks(
   collectionName: string,
   k = 5
 ): Promise<RetrievedChunk[]> {
-  const { url, apiKey } = validateQdrantEnv();
+  const client = buildQdrantClient();
   const embedder = createEmbedder();
 
   try {
     const vectorStore = await QdrantVectorStore.fromExistingCollection(
       embedder,
-      {
-        url,
-        apiKey,
-        collectionName,
-      }
+      { client, collectionName }
     );
 
     const results = await vectorStore.similaritySearchWithScore(query, k);
@@ -89,3 +82,4 @@ export async function retrieveChunks(
     );
   }
 }
+

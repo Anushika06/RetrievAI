@@ -5,7 +5,10 @@ import { parse } from "csv-parse/sync";
 export interface ChunkMetadata {
   source: string;
   chunkIndex: number;
-  pageApprox: number;
+  pageApprox?: number;  // Optional for CSVs
+  rowStart?: number;    // Optional for PDFs/TXTs
+  rowEnd?: number;      // Optional for PDFs/TXTs
+  [key: string]: any;   // Catch-all for any other LangChain metadata
 }
 
 export function createChunker(): RecursiveCharacterTextSplitter {
@@ -57,18 +60,12 @@ export async function chunkText(
  * rowsPerChunk: 50 — balances token count vs. context completeness.
  * Header repetition: ensures every chunk is self-contained and interpretable.
  */
-export interface CsvChunkMetadata {
-  source: string;
-  chunkIndex: number;
-  rowStart: number;
-  rowEnd: number;
-}
 
 export function parseAndChunkCSV(
   csvText: string,
   fileName: string,
   rowsPerChunk = 50
-): Document<CsvChunkMetadata>[] {
+): Document<ChunkMetadata>[] {
   const rows: string[][] = parse(csvText, {
     skip_empty_lines: true,
     relax_column_count: true,
@@ -86,7 +83,7 @@ export function parseAndChunkCSV(
 
   const headerContext = `CSV Columns: ${headerRow.join(", ")}`;
 
-  const documents: Document<CsvChunkMetadata>[] = [];
+  const documents: Document<ChunkMetadata>[] = [];
 
   for (let i = 0; i < dataRows.length; i += rowsPerChunk) {
     const batch = dataRows.slice(i, i + rowsPerChunk);
@@ -103,7 +100,7 @@ export function parseAndChunkCSV(
     const pageContent = `${headerContext}\n\n${rowStrings.join("\n")}`;
 
     documents.push(
-      new Document<CsvChunkMetadata>({
+      new Document<ChunkMetadata>({
         pageContent,
         metadata: {
           source: fileName,
